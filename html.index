@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIM - Srilangka Indonesia Market</title>
+
+<style>
+* {box-sizing:border-box;margin:0;padding:0}
+body {
+ font-family:Arial,sans-serif;
+ background:#fff5f5;
+ color:#222;
+}
+header {
+ background:linear-gradient(120deg,#b90000,#ed2525);
+ color:white;
+ padding:25px 6%;
+ text-align:center;
+}
+.logo {
+ font-size:38px;
+ font-weight:900;
+ letter-spacing:3px;
+}
+header p {margin-top:8px}
+nav {
+ background:white;
+ padding:15px;
+ display:flex;
+ justify-content:center;
+ flex-wrap:wrap;
+ gap:10px;
+ box-shadow:0 3px 10px #ddd;
+}
+nav button {
+ border:0;
+ background:#ffe5e5;
+ color:#b90000;
+ padding:11px 17px;
+ border-radius:20px;
+ font-weight:bold;
+ cursor:pointer;
+}
+nav button:hover {background:#c90000;color:white}
+.container {padding:25px 6%}
+.hero {
+ background:linear-gradient(120deg,#c90000,#ff7777);
+ color:white;
+ padding:35px 25px;
+ border-radius:18px;
+ text-align:center;
+ margin-bottom:25px;
+}
+.hero h1 {font-size:28px;margin-bottom:12px}
+.search {
+ width:100%;
+ padding:14px;
+ border:1px solid #ddd;
+ border-radius:10px;
+ margin-bottom:25px;
+ font-size:16px;
+}
+.products {
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+ gap:18px;
+}
+.card {
+ background:white;
+ border-radius:15px;
+ overflow:hidden;
+ box-shadow:0 4px 15px #ddd;
+ padding-bottom:15px;
+}
+.photo {
+ height:160px;
+ background:#ffe5e5;
+ display:flex;
+ justify-content:center;
+ align-items:center;
+ font-size:65px;
+}
+.card h3 {padding:12px 12px 5px}
+.category {padding:0 12px;color:#888;font-size:13px}
+.price {padding:12px;color:#c90000;font-weight:bold}
+.card button {
+ margin:0 12px;
+ width:calc(100% - 24px);
+ padding:12px;
+ border:0;
+ background:#c90000;
+ color:white;
+ border-radius:8px;
+ cursor:pointer;
+ font-weight:bold;
+}
+.cart {
+ background:white;
+ padding:22px;
+ border-radius:15px;
+ margin-top:30px;
+ box-shadow:0 3px 12px #ddd;
+}
+.cart h2 {color:#c90000;margin-bottom:15px}
+.cart-item {
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ padding:10px 0;
+ border-bottom:1px solid #eee;
+}
+.total {
+ font-size:20px;
+ font-weight:bold;
+ margin:20px 0;
+}
+.checkout {
+ background:#168a48;
+ color:white;
+ border:0;
+ border-radius:10px;
+ padding:14px;
+ width:100%;
+ font-weight:bold;
+ cursor:pointer;
+}
+footer {
+ margin-top:35px;
+ background:#b90000;
+ color:white;
+ text-align:center;
+ padding:25px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">SIM MARKET</div>
+ <h3>🇱🇰 SRILANKA × 🇮🇩 INDONESIA 🇮🇩</h3>
+ <p>MENYEDIAKAN SEMUA PRODUK INDONESIA</p>
+</header>
+
+<nav>
+ <button onclick="filter('Semua')">SEMUA</button>
+ <button onclick="filter('Pakaian')">PAKAIAN</button>
+ <button onclick="filter('Parfum')">PARFUM</button>
+ <button onclick="filter('Skincare')">SKINCARE</button>
+ <button onclick="filter('Cemilan')">CEMILAN</button>
+</nav>
+
+<div class="container">
+
+ <section class="hero">
+  <h1>SELAMAT DATANG DI SIM MARKET</h1>
+  <p>Belanja produk pilihan Indonesia di Sri Lanka!</p>
+ </section>
+
+ <input class="search" id="search"
+ placeholder="Cari nama produk..."
+ oninput="render()">
+
+ <h2 style="color:#b90000;margin-bottom:18px">
+  PRODUK PILIHAN
+ </h2>
+
+ <div class="products" id="products"></div>
+
+ <section class="cart">
+  <h2>🛒 KERANJANG BELANJA</h2>
+  <div id="cartItems">Belum ada produk.</div>
+  <div class="total" id="total">TOTAL: LKR 0</div>
+  <button class="checkout" onclick="checkout()">
+   BUAT RINGKASAN PESANAN
+  </button>
+ </section>
+
+</div>
+
+<footer>
+ <h2>SIM MARKET</h2>
+ <p>SRILANKA × INDONESIA</p>
+ <p>Terima kasih sudah berbelanja!</p>
+</footer>
+
+<script>
+const products = [
+ {name:"Baju Indonesia",cat:"Pakaian",price:0,emoji:"👕"},
+ {name:"Kaos Casual",cat:"Pakaian",price:0,emoji:"👔"},
+ {name:"Parfum Premium",cat:"Parfum",price:0,emoji:"🌸"},
+ {name:"Parfum Wanita",cat:"Parfum",price:0,emoji:"🧴"},
+ {name:"Serum Wajah",cat:"Skincare",price:0,emoji:"✨"},
+ {name:"Facial Wash",cat:"Skincare",price:0,emoji:"🧼"},
+ {name:"Snack Indonesia",cat:"Cemilan",price:0,emoji:"🍪"},
+ {name:"Keripik Indonesia",cat:"Cemilan",price:0,emoji:"🍟"}
+];
+
+let activeFilter = "Semua";
+let cart = [];
+
+function render(){
+ const search = document.getElementById("search").value.toLowerCase();
+ const filtered = products.filter(p =>
+  (activeFilter==="Semua" || p.cat===activeFilter) &&
+  p.name.toLowerCase().includes(search)
+ );
+
+ document.getElementById("products").innerHTML =
+ filtered.map(p => `
+ <div class="card">
+  <div class="photo">${p.emoji}</div>
+  <h3>${p.name}</h3>
+  <div class="category">${p.cat}</div>
+  <div class="price">
+   ${p.price>0 ? "LKR "+p.price.toLocaleString("en-US") : "Tanyakan harga"}
+  </div>
+  <button onclick="addCart('${p.name}')">
+   + TAMBAH KE KERANJANG
+  </button>
+ </div>
+ `).join("");
+}
+
+function filter(cat){
+ activeFilter=cat;
+ render();
+}
+
+function addCart(name){
+ const item=cart.find(p=>p.name===name);
+ if(item) item.qty++;
+ else cart.push({name,qty:1});
+ updateCart();
+}
+
+function updateCart(){
+ const el=document.getElementById("cartItems");
+ if(cart.length===0){
+  el.innerHTML="Belum ada produk.";
+ } else {
+  el.innerHTML=cart.map((p,i)=>`
+   <div class="cart-item">
+    <span>${p.name} x ${p.qty}</span>
+    <button onclick="removeItem(${i})">Hapus</button>
+   </div>
+  `).join("");
+ }
+ const total=cart.reduce((s,p)=>{
+  const product=products.find(x=>x.name===p.name);
+  return s+product.price*p.qty;
+ },0);
+ document.getElementById("total").innerText=
+ "TOTAL: LKR "+total.toLocaleString("en-US");
+}
+
+function removeItem(i){
+ cart.splice(i,1);
+ updateCart();
+}
+
+function checkout(){
+ if(cart.length===0){
+  alert("Keranjang masih kosong!");
+  return;
+ }
+ const message="PESANAN SIM MARKET\n\n"+
+ cart.map(p=>p.name+" x "+p.qty).join("\n")+
+ "\n\nSilakan konfirmasi harga dan ketersediaan produk.";
+ const url="https://wa.me/?text="+encodeURIComponent(message);
+ window.open(url,"_blank");
+}
+
+render();
+</script>
+
+</body>
+</html>
